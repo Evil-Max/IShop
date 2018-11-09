@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://ishop.test.com"
+           elementFormDefault="qualified"
+           xmlns="http://ishop.test.com"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:beans="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool.xsd">
+
+    <xs:element name="fakeData">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message">
+                    <xs:complexType>
+                        <xs:attribute name="value" type="xs:string" default="Hello"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="map" minOccurs="1" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="key" type="xs:integer"/>
+                                    <xs:attribute name="value" type="xs:string"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="fakeData1">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string" default="Hello"/>
+
+                <xs:element name="map">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="key" minOccurs="0" type="xs:integer"/>
+                                        <xs:element name="value" minOccurs="0" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+            </xs:sequence>
+
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

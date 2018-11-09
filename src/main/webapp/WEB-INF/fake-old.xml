@@ -1,0 +1,22 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+   http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+    <bean id = "fakeData" class = "com.test.ishop.config.FakeData">
+        <property name="data">
+            <map key-type="java.lang.Long" value-type="java.lang.String">
+                <entry key="1" value="One"/>
+                <entry key="2" value="Two"/>
+                <entry key="3" value="Three"/>
+                <entry key="4" value="Four"/>
+                <entry key="5" value="Five"/>
+            </map>
+        </property>
+    </bean>
+    <bean id="fakeClass" class="com.test.ishop.config.FakeClass">
+        <property name="fakeData" ref="fakeData"/>
+    </bean>
+</beans>
