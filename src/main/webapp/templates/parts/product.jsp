@@ -12,7 +12,7 @@
                     </li>
                     <c:forEach items="${categories}" var="category">
                         <li class="nav-item">
-                            <a class="nav-link col-md-10 d-inline-block text-truncate <#if activeCategory==category.id>active font-weight-bold</#if> >" href="/category/${category.id}">
+                            <a class="nav-link col-md-10 d-inline-block text-truncate <c:if test="${activeCategory==category.id}">active font-weight-bold</c:if>"href="<c:url value = "/category/${category.id}"/>">
                                 ${category.name}
                             </a>
                        </li>
@@ -44,7 +44,7 @@
             <div class="container">
                 <div class="row">
                     <div class="collapse form-group" id="collapseFilter">
-                        <form action="/filter" method="post" enctype="multipart/form-data">
+                        <form action="<c:url value = "/filter"/>" method="post">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             <!--Фильтр цена-->
                             <div class="my-2 form-group">
@@ -101,6 +101,7 @@
                                 </div>
                             </div>
                             <!--Фильтр атрибуты-->
+                            <!--TODO-->
                             <c:if test="${activeCategory!=0}">
                                 ${activeCategory}
                             </c:if>
@@ -126,7 +127,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
+                    
                     <c:forEach items="${products}" var="product">
                     <c:choose>
                     <c:when test="${product.getStatus() ne 'NO_AVAILABLE'}">
@@ -136,30 +137,32 @@
                             <td>${product.price}</td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${product.getStatus() eq 'AVAILABLE'}">
-                                        В наличии
-                                    </c:when>
-                                    <c:when test="${product.getStatus() eq 'ON_ORDER'}">
-                                        Под заказ
-                                    </c:when>
-                                    <c:otherwise>
-                                        Нет данных
-                                    </c:otherwise>
+                                    <c:when test="${product.getStatus() eq 'AVAILABLE'}">В наличии</c:when>
+                                    <c:when test="${product.getStatus() eq 'ON_ORDER'}">Под заказ</c:when>
+                                    <c:otherwise>Нет данных</c:otherwise>
                                 </c:choose>
                             </td>
-                            <td>${product.attributesList()}</td>
+                            <td>
+                            <a tabindex="0" class="btn btn-secondary btn-sm" role="button" data-toggle="popover" data-trigger="focus"
+                               data-content="${product.attributesList()}">?</a>
+                            </td>
+                            <th>
+                                <button class="btn btn-primary btn-sm" onclick="addProduct(${product.id});">+</button>
+                            </th>
 
                         </tr>
                     </c:when>
                     </c:choose>
                     </c:forEach>
+                    
+                </tbody>
                 </table>
             </div>
 
         </div>
     </div>
 </div>
-<c:if test="${!message.isEmpty()}">
+<c:if test="${message != null}">
     <script>
     addAlert('${message}','success');
     </script>

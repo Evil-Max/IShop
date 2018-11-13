@@ -23,6 +23,8 @@
         <javax.servlet.version>3.1.0</javax.servlet.version>
         <spring-web.version>5.1.2.RELEASE</spring-web.version>
         <commons-logging.version>1.2</commons-logging.version>
+        <commons-io.version>1.3.2</commons-io.version>
+        <jackson-core.version>2.9.7</jackson-core.version>
     </properties>
 
     <dependencies>
@@ -117,11 +119,24 @@
             <version>${spring-web.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ru.sbrf.ufs.platform</groupId>-->
-            <!--<artifactId>ufs-platform-core</artifactId>-->
-            <!--<version>7.1.0.0</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-core.version}</version>
+        </dependency>
+
+        <!--UFS platform-->
         <dependency>
             <groupId>ru.sbrf.ufs.platform</groupId>
             <artifactId>ufs-platform-spring</artifactId>

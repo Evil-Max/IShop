@@ -22,7 +22,7 @@ public class Product {
     @Enumerated(EnumType.ORDINAL)
     private ProdStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name="category_id", nullable = false)
     private Category category;
 
@@ -52,13 +52,13 @@ public class Product {
     }
 
     public String attributesList() {
-        LOGGER.debug("attributesList");
+        //LOGGER.debug("attributesList");
         String result="";
         for(ProductAttribute p:values) {
             result+=p.getAttribute().getName()+": "+(p.getAttribute().getType()=='S'?p.getValueStr():p.getValueNum().toString())+", ";
         }
         if (result.length()>0) result=result.substring(0,result.length()-2);
-        LOGGER.debug("result:"+result);
+        //LOGGER.debug("result:"+result);
         return  result;
     }
 

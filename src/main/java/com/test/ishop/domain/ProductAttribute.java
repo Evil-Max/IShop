@@ -16,11 +16,11 @@ public class ProductAttribute {
     @Column(name = "value_n")
     private Double valueNum;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="product_id", insertable=false, updatable=false)
     private Product product;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="attribute_id", insertable=false, updatable=false)
     private Attribute attribute;
 

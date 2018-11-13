@@ -57,12 +57,13 @@ public class MainController {
         return "main";
     }
 
-    @GetMapping("/category/{category}")
+    @GetMapping("/category/{cid}")
     public String categoryFilter(
-            @PathVariable Category category,
+            @PathVariable long cid,
             Model model
     ) {
-        LOGGER.info("category/"+category.getId()+" is called");
+        Category category = categoryRepo.getOne(cid);
+        LOGGER.info("category/"+cid+" is called");
 
         categories = categoryRepo.findAll();
         Long id=0L;

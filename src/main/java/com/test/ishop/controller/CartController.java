@@ -59,9 +59,10 @@ public class CartController {
     ) {
 
         //System.out.println(id);
-        //Product product = productRepo.findById(id).get();
+        Product product = productRepo.findById(id).get();
         LOGGER.info("addProduct is called. Id="+id);
-        Product product = productRepo.getOne(id);
+        //Product product = productRepo.getOne(id);
+        LOGGER.info("Name="+product.getName());
         Map<String,String> result = new HashMap<String, String>();
         Double sum=0d;
         String status="";
@@ -99,11 +100,12 @@ public class CartController {
         return "cart";
     }
 
-    @PostMapping("/deleteProduct/{product}")
+    @PostMapping("/deleteProduct/{pid}")
     public String deleteProduct(
-            @PathVariable Product product,
+            @PathVariable long pid,
             Model model
     ) {
+        Product product = productRepo.getOne(pid);
         LOGGER.info("deleteProduct is called. Id="+product.getId()+". "+product.getName());
         for (Iterator<Product> i = cart.getProducts().iterator(); i.hasNext();) {
             Product p = i.next();
