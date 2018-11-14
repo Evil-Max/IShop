@@ -29,19 +29,6 @@ public class Order {
     public Order() {
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", fio='" + fio + '\'' +
-                ", address='" + address + '\'' +
-                ", summa=" + summa +
-                ", email='" + email + '\'' +
-                ", orderStatus=" + orderStatus +
-                ", deliveryStatus=" + deliveryStatus +
-                ", cart=" + cart +
-                '}';
-    }
 
     public String getEmail() {
         return email;

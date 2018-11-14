@@ -16,13 +16,21 @@
    http://www.springframework.org/schema/context
    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+    <!-- ========================================================== -->
+    <!-- Import -->
+    <!-- ========================================================== -->
+    <import resource="fake.xml"/>
+    <import resource="applicationContext-security.xml"/>
+    <import resource="ds.xml"/>
 
     <!-- ========================================================== -->
     <!-- General -->
     <!-- ========================================================== -->
     <context:component-scan base-package = "com.test.ishop" />
     <mvc:resources mapping="/js/**" location="/templates/js/"/>
+    <!--<mvc:resources mapping="/login" location="/templates/login"/>-->
     <mvc:annotation-driven/>
+    <mvc:view-controller path="/login" view-name="login"/>
     <!--Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired and so on-->
     <context:annotation-config/>
 
@@ -37,7 +45,6 @@
     <!-- EntityManagerFactory-->
     <bean id="entityManagerFactoryBean" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <!-- This makes /META-INF/persistence.xml is no longer necessary -->
         <!--поиск сущностей в этом пакете-->
         <property name="packagesToScan" value="com.test.ishop.domain" />
         <!--Поставщик данных - hibernate-->
@@ -47,7 +54,6 @@
         <property name="jpaProperties">
             <props>
                 <prop key="hibernate.hbm2ddl.auto">validate</prop>
-                <!--<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>-->
                 <prop key="show_sql">true</prop>
             </props>
         </property>
@@ -59,7 +65,7 @@
     </bean>
     <!-- Need for Repository abstraction -->
     <jpa:repositories base-package="com.test.ishop.repos" entity-manager-factory-ref="entityManagerFactoryBean"
-                      transaction-manager-ref="transactionManager"/>
+                      transaction-manager-ref="transactionManager" />
     <!-- responsible for registering the necessary Spring components that power annotation-driven transaction management;
          such as when @Transactional methods are invoked -->
     <tx:annotation-driven />
@@ -68,5 +74,4 @@
     <!-- End -->
     <!-- ========================================================== -->
 
-    <!--<mvc:resources mapping = "/pages/**" location = "/WEB-INF/htm/" />-->
 </beans>

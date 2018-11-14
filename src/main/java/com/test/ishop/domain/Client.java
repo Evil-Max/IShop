@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "client")
-public class Client implements UserDetails {
+public class Client /*implements UserDetails*/ {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -38,23 +38,6 @@ public class Client implements UserDetails {
     public Client() {
     }
 
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", first_name='" + first_name + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                ", surname='" + surname + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", active=" + active +
-                ", roles=" + roles +
-                ", carts=" + carts +
-                '}';
-    }
-
     public String getFI() {
         return getFirst_name()+" "+getSurname();
     }
@@ -70,7 +53,7 @@ public class Client implements UserDetails {
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);
     }
-
+/*
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -95,7 +78,7 @@ public class Client implements UserDetails {
     public boolean isEnabled() {
         return isActive();
     }
-
+*/
     public String getFullName() {
         return surname+" "+first_name+" "+patronymic;
     }
@@ -148,7 +131,7 @@ public class Client implements UserDetails {
         this.email = email;
     }
 
-    @Override
+
     public String getUsername() {
         return username;
     }
@@ -180,4 +163,5 @@ public class Client implements UserDetails {
     public void setCarts(Set<Cart> carts) {
         this.carts = carts;
     }
+
 }

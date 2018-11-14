@@ -45,9 +45,9 @@ public class Product {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", status=" + status +
-                ", category=" + category +
+                ", category=" + category.getId() +
                 ", values=" + values +
-                ", carts=" + carts +
+                ", carts=?" +
                 '}';
     }
 

@@ -33,8 +33,8 @@ public class ProductAttribute {
                 "id=" + id +
                 ", valueStr='" + valueStr + '\'' +
                 ", valueNum=" + valueNum +
-                ", product=" + product +
-                ", attribute=" + attribute +
+                ", product=" + product.getId() +
+                ", attribute=" + attribute.getId() +
                 '}';
     }
 

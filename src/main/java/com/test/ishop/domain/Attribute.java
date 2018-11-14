@@ -29,18 +29,6 @@ public class Attribute {
     public Attribute() {
     }
 
-    @Override
-    public String toString() {
-        return "Attribute{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", category=" + category +
-                ", values=" + values +
-                ", list=" + list +
-                '}';
-    }
-
     public Set<AttributeList> getList() {
         return list;
     }

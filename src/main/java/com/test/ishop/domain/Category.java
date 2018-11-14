@@ -21,15 +21,6 @@ public class Category {
     public Category() {
     }
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", attributes=" + attributes +
-                ", products=" + products +
-                '}';
-    }
 
     public Set<Product> getProducts() {
         return products;

@@ -2,10 +2,12 @@ package com.test.ishop.controller;
 
 import com.test.ishop.domain.*;
 import com.test.ishop.repos.CategoryRepo;
+import com.test.ishop.repos.ClientRepo;
 import com.test.ishop.repos.ProductRepo;
 import com.test.ishop.config.FakeClass;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.util.*;
 
 
@@ -26,6 +29,7 @@ public class MainController {
     private CategoryRepo categoryRepo;
     @Autowired
     private ProductRepo productRepo;
+
 
     @Autowired
     private FakeClass fakeClass;
@@ -69,10 +73,14 @@ public class MainController {
         Long id=0L;
 
         if (category!=null) {
+            LOGGER.debug("products for category.id "+category.getId());
             products = productRepo.findByCategoryId(category.getId());
+            LOGGER.debug("done");
             id=category.getId();
         } else {
+            LOGGER.debug("products - findAll");
             products = productRepo.findAll();
+            LOGGER.debug("done");
         }
         activeCategory=id;
         fillModel(model);
