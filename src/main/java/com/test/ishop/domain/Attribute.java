@@ -14,11 +14,11 @@ public class Attribute {
     private String name;
     private char type;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name="category_id", nullable = false)
     private Category category;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name="attribute_id", nullable = false)
     private Set<ProductAttribute> values = new HashSet<ProductAttribute>();
 
@@ -27,18 +27,6 @@ public class Attribute {
     private Set<AttributeList> list = new HashSet<AttributeList>();
 
     public Attribute() {
-    }
-
-    @Override
-    public String toString() {
-        return "Attribute{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", category=" + category +
-                ", values=" + values +
-                ", list=" + list +
-                '}';
     }
 
     public Set<AttributeList> getList() {

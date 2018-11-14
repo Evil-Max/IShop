@@ -43,7 +43,9 @@ function setCartSum() {
             };
         };
     };
-	req.open('POST', '/getCartSum', true);
+    var url = $("meta[name='url']").attr("content");
+
+	req.open('POST', url+'/getCartSum', true);
     var obj  = {};
 
     var csrfParameter = '${_csrf.parameterName}';
@@ -83,7 +85,8 @@ function addProduct(id) {
             }
         }
     }
-    req.open('POST', '/addProduct/'+id, true);
+    var url = $("meta[name='url']").attr("content");
+    req.open('POST', url+'/addProduct/'+id, true);
     var obj  = {};
 
     var csrfParameter = '${_csrf.parameterName}';

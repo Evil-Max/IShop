@@ -10,13 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 @Controller
 public class CartController {
@@ -44,7 +46,7 @@ public class CartController {
     public Map<String,String> getCartSum (
             Model model
     ) {
-        LOGGER.info("getCartSum is called");
+        LOGGER.debug("getCartSum is called");
         Map<String,String> result = new HashMap<String, String>();
         Double sum = cart.getCartSum();
         result.put("sum",sum.toString());
@@ -59,9 +61,10 @@ public class CartController {
     ) {
 
         //System.out.println(id);
-        //Product product = productRepo.findById(id).get();
-        LOGGER.info("addProduct is called. Id="+id);
-        Product product = productRepo.getOne(id);
+        Product product = productRepo.findById(id).get();
+        LOGGER.debug("addProduct is called. Id="+id);
+        //Product product = productRepo.getOne(id);
+        LOGGER.debug("Name="+product.getName());
         Map<String,String> result = new HashMap<String, String>();
         Double sum=0d;
         String status="";
@@ -80,7 +83,7 @@ public class CartController {
             } else status = "Товара нет в наличии";
         } else status ="Ошибка при добавлении товара в корзину";
 
-        if (!status.isEmpty()) LOGGER.info("Product add error="+status);
+        if (!status.isEmpty()) LOGGER.debug("Product add error="+status);
         
         sum = cart.getCartSum();
         result.put("sum", sum.toString());
@@ -93,18 +96,21 @@ public class CartController {
     public String showCart(
             Model model
     ) {
-        LOGGER.info("cart is called");
+        LOGGER.debug("cart is called");
         if (cart.getProducts() == null) cart.setProducts(new HashSet<Product>());
         model.addAttribute("cart",cart);
         return "cart";
     }
 
-    @PostMapping("/deleteProduct/{product}")
+    @PostMapping("/deleteProduct/{pid}")
     public String deleteProduct(
-            @PathVariable Product product,
+            @PathVariable long pid,
             Model model
     ) {
-        LOGGER.info("deleteProduct is called. Id="+product.getId()+". "+product.getName());
+        LOGGER.debug("deleteProduct is called. Id="+pid);
+        //Product product = productRepo.getOne(pid);
+        Product product = productRepo.findById(pid).get();
+        LOGGER.debug("name="+product.getName());
         for (Iterator<Product> i = cart.getProducts().iterator(); i.hasNext();) {
             Product p = i.next();
             if (p.getId().equals(product.getId())) {
@@ -119,7 +125,7 @@ public class CartController {
     public String clearCart(
             Model model
     ) {
-        LOGGER.info("clearCart is called. Deleting "+cart.getProducts().size()+" products");
+        LOGGER.debug("clearCart is called. Deleting "+cart.getProducts().size()+" products");
         cart.getProducts().clear();
         model.addAttribute("cart",cart);
         return "cart";
@@ -129,7 +135,7 @@ public class CartController {
     public String fillOrder(
             Model model
     ) {
-        LOGGER.info("order is called.");
+        LOGGER.debug("order is called.");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Client client = clientRepo.findByUsername(userName);
@@ -146,7 +152,7 @@ public class CartController {
     public String myOrders(
             Model model
     ) {
-        LOGGER.info("meorders is called");
+        LOGGER.debug("meorders is called");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Client client = clientRepo.findByUsername(userName);
@@ -169,13 +175,13 @@ public class CartController {
             @RequestParam String delivery,
             Model model
     ) {
-        LOGGER.info("confirm is called.");
+        LOGGER.debug("confirm is called.");
         String errorMessage = "";
 
         if ((cart==null)||(cart.getProducts().isEmpty())) {
             errorMessage ="Не возможно оформить заказ. Корзина пуста.";
             model.addAttribute("errormessage", errorMessage);
-            LOGGER.info("order error:"+errorMessage);
+            LOGGER.debug("order error:"+errorMessage);
             return "order";
         }
 
@@ -183,16 +189,20 @@ public class CartController {
         if ((fio.isEmpty())||(address.isEmpty())||(deliveryStatus==null)) {
             errorMessage ="Не возможно оформить заказ. Не заполнены все поля.";
             model.addAttribute("errormessage", errorMessage);
-            LOGGER.info("order error:"+errorMessage+"(fio="+fio+", address="+address+", status="+deliveryStatus+")");
+            LOGGER.debug("order error:"+errorMessage+"(fio="+fio+", address="+address+", status="+deliveryStatus+")");
             return "order";
         }
 
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        LOGGER.debug("username="+userName);
         Client client = clientRepo.findByUsername(userName);
+        LOGGER.debug("find client="+client.getFI());
 
         cart.setClient(client);
+        LOGGER.debug("cart befor save: "+cart.toString());
         cartRepo.save(cart);
+        LOGGER.debug("cart saved");
 
         Order order = new Order();
         order.setAddress(address);
@@ -203,17 +213,13 @@ public class CartController {
         order.setDeliveryStatus(DeliveryStatus.values()[deliveryStatus]);
         order.setCart(cart);
         orderRepo.save(order);
+        LOGGER.debug("order saved");
         cart = new Cart();
 
         String message="Заказ оформлен. Ожидайте доставки.";
-        String charset = Charset.defaultCharset().name();
-        String encodedValue = "";
-        try {
-            encodedValue = URLEncoder.encode(message,charset);
-        } catch (UnsupportedEncodingException e) {
-        }
-        LOGGER.info("new order created:"+order);
-        return "forward:/alert/"+encodedValue;
+        LOGGER.debug("new order created:"+order);
+
+        return "forward:/alert/"+message;
     }
 
 

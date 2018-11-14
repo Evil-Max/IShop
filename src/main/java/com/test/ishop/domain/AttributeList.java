@@ -15,14 +15,6 @@ public class AttributeList {
     @JoinColumn(name="attribute_id", insertable=false, updatable=false)
     private Attribute attribute;
 
-    @Override
-    public String toString() {
-        return "AttributeList{" +
-                "id=" + id +
-                ", value='" + value + '\'' +
-                ", attribute=" + attribute +
-                '}';
-    }
 
     public Long getId() {
         return id;

@@ -4,6 +4,27 @@
          xsi:schemaLocation = "http://java.sun.com/xml/ns/j2ee
    http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
+    <!-- ========================================================== -->
+    <!-- Encoding filter -->
+    <!-- ========================================================== -->
+
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
 
     <!-- ========================================================== -->
     <!-- Spring Security -->
@@ -12,14 +33,14 @@
       - Location of the XML file that defines the root application context
       - Applied by ContextLoaderListener.
       -->
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-            WEB-INF/applicationContext-security.xml
-            WEB-INF/ds.xml
-            WEB-INF/fake.xml
-        </param-value>
-    </context-param>
+    <!--<context-param>-->
+        <!--<param-name>contextConfigLocation</param-name>-->
+        <!--<param-value>-->
+            <!--WEB-INF/applicationContext-security.xml-->
+            <!--WEB-INF/ds.xml-->
+            <!--WEB-INF/fake.xml-->
+        <!--</param-value>-->
+    <!--</context-param>-->
     <!--
         Key of the system property that should specify the root directory of this
         web app. Applied by WebAppRootListener or Log4jConfigListener.
@@ -38,9 +59,9 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <!-- Creates the Spring Container shared by all Servlets and Filters -->
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
+    <!--<listener>-->
+        <!--<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>-->
+    <!--</listener>-->
     <!--
       - Publishes events for session creation and destruction through the application
       - context. Optional unless concurrent session control is being used.
@@ -62,8 +83,10 @@
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
+
         <load-on-startup>1</load-on-startup>
     </servlet>
+
 
     <servlet-mapping>
         <servlet-name>IShop</servlet-name>
@@ -76,6 +99,7 @@
     <filter>
         <filter-name>LogFilter</filter-name>
         <filter-class>org.springframework.web.filter.CommonsRequestLoggingFilter</filter-class>
+        <!--<filter-class>com.test.ishop.config.MyRequestLoggingFilter</filter-class>-->
         <init-param>
             <param-name>includeClientInfo</param-name>
             <param-value>true</param-value>
@@ -93,28 +117,5 @@
         <filter-name>LogFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
-
-    <!-- ========================================================== -->
-    <!-- Encoding filter ??? -->
-    <!-- ========================================================== -->
-    <!--
-    <filter>
-        <filter-name>characterEncodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>characterEncodingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    -->
 
 </web-app>

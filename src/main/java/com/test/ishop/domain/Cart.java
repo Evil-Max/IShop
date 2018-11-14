@@ -1,6 +1,7 @@
 package com.test.ishop.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,7 +13,7 @@ public class Cart {
 
     //private boolean active; // true = active
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE })
     @JoinColumn(name="client_id", nullable = false)
     private Client client;
 
@@ -30,11 +31,15 @@ public class Cart {
 
     @Override
     public String toString() {
+        String cl;
+        if (client==null) cl="null";
+            else cl=client.getId().toString();
+
         return "Cart{" +
                 "id=" + id +
-                ", client=" + client +
+                ", client=" + cl +
                 ", products=" + products +
-                ", order=" + order +
+                ", order=?" +
                 '}';
     }
 

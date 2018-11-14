@@ -12,7 +12,7 @@
                     </li>
                     <c:forEach items="${categories}" var="category">
                         <li class="nav-item">
-                            <a class="nav-link col-md-10 d-inline-block text-truncate <#if activeCategory==category.id>active font-weight-bold</#if> >" href="/category/${category.id}">
+                            <a class="nav-link col-md-10 d-inline-block text-truncate <c:if test="${activeCategory==category.id}">active font-weight-bold</c:if>"href="<c:url value = '/category/${category.id}'/>">
                                 ${category.name}
                             </a>
                        </li>
@@ -32,7 +32,6 @@
                                 type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseExample">
                             Фильтр
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -44,7 +43,7 @@
             <div class="container">
                 <div class="row">
                     <div class="collapse form-group" id="collapseFilter">
-                        <form action="/filter" method="post" enctype="multipart/form-data">
+                        <form action="<c:url value = '/filter'/>" method="post">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                             <!--Фильтр цена-->
                             <div class="my-2 form-group">
@@ -56,13 +55,13 @@
                                         От
                                     </div>
                                     <div class="mx-sm-3">
-                                        <input type="text" class="form-control mx-sm-3" name="price1" placeholder="Цена от">
+                                        <input type="text" class="form-control mx-sm-3" name="price1" placeholder="Цена от"/>
                                     </div>
                                     <div class="mx-sm-3 col-form-label">
                                         До
                                     </div>
                                     <div>
-                                        <input type="text" class="form-control mx-sm-3" name="price2" placeholder="Цена до">
+                                        <input type="text" class="form-control mx-sm-3" name="price2" placeholder="Цена до"/>
                                     </div>
                                 </div>
                             </div>
@@ -77,13 +76,13 @@
                                         От
                                     </div>
                                     <div class="mx-sm-3">
-                                        <input type="text" class="form-control mx-sm-3" name="qnty1" placeholder="Кол-во от">
+                                        <input type="text" class="form-control mx-sm-3" name="qnty1" placeholder="Кол-во от"/>
                                     </div>
                                     <div class="mx-sm-3 col-form-label">
                                         До
                                     </div>
                                     <div>
-                                        <input type="text" class="form-control mx-sm-3" name="qnty2" placeholder="Кол-во до">
+                                        <input type="text" class="form-control mx-sm-3" name="qnty2" placeholder="Кол-во до"/>
                                     </div>
                                 </div>
                             </div>
@@ -101,6 +100,7 @@
                                 </div>
                             </div>
                             <!--Фильтр атрибуты-->
+                            <!--TODO-->
                             <c:if test="${activeCategory!=0}">
                                 ${activeCategory}
                             </c:if>
@@ -126,40 +126,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
-                    <c:forEach items="${products}" var="product">
-                    <c:choose>
-                    <c:when test="${product.getStatus() ne 'NO_AVAILABLE'}">
-                        <tr>
-                            <td>${product.id}</td>
-                            <td id="product-name-${product.id}">${product.name}</td>
-                            <td>${product.price}</td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${product.getStatus() eq 'AVAILABLE'}">
-                                        В наличии
-                                    </c:when>
-                                    <c:when test="${product.getStatus() eq 'ON_ORDER'}">
-                                        Под заказ
-                                    </c:when>
-                                    <c:otherwise>
-                                        Нет данных
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>${product.attributesList()}</td>
+                    
+                <c:forEach items="${products}" var="product">
+                <c:choose>
+                <c:when test="${product.status ne 'NO_AVAILABLE'}">
+                    <tr>
+                        <td>${product.id}</td>
+                        <td id="product-name-${product.id}">${product.name}</td>
+                        <td>${product.price}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${product.status eq 'AVAILABLE'}">В наличии</c:when>
+                                <c:when test="${product.status eq 'ON_ORDER'}">Под заказ</c:when>
+                                <c:otherwise>Нет данных</c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>
+                        <a tabindex="0" class="btn btn-secondary btn-sm" role="button" data-toggle="popover" data-trigger="focus"
+                           data-content="${product.attributesList()}">?</a>
+                        </td>
+                        <th>
+                            <button class="btn btn-primary btn-sm" onclick="addProduct(${product.id});">+</button>
+                        </th>
 
-                        </tr>
-                    </c:when>
-                    </c:choose>
-                    </c:forEach>
+                    </tr>
+                </c:when>
+                </c:choose>
+                </c:forEach>
+                    
+                </tbody>
                 </table>
             </div>
 
         </div>
     </div>
 </div>
-<c:if test="${!message.isEmpty()}">
+<c:if test="${message != null}">
     <script>
     addAlert('${message}','success');
     </script>
