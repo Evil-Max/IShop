@@ -1,6 +1,5 @@
 package com.test.ishop.domain;
 
-import com.test.ishop.controller.RegistrationController;
 import org.apache.log4j.Logger;
 
 import javax.persistence.*;
@@ -52,13 +51,11 @@ public class Product {
     }
 
     public String attributesList() {
-        //LOGGER.debug("attributesList");
         String result="";
         for(ProductAttribute p:values) {
             result+=p.getAttribute().getName()+": "+(p.getAttribute().getType()=='S'?p.getValueStr():p.getValueNum().toString())+", ";
         }
         if (result.length()>0) result=result.substring(0,result.length()-2);
-        //LOGGER.debug("result:"+result);
         return  result;
     }
 

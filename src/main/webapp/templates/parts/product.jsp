@@ -100,9 +100,51 @@
                                 </div>
                             </div>
                             <!--Фильтр атрибуты-->
-                            <!--TODO-->
                             <c:if test="${activeCategory!=0}">
-                                ${activeCategory}
+                            <c:forEach items="${categories}" var="category">
+                            <c:if test="${category.id==activeCategory}">
+                            <c:forEach items="${category.attributes}" var="attribute">
+                                <c:choose>
+                                    <c:when test="${attribute.type=='N'.charAt(0)}">
+                                        <div class="my-2">
+                                            <div>
+                                                <label class="col-form-label mx-sm-3 mb-2 font-weight-bold">${attribute.name}</label>
+                                            </div>
+                                            <div class="row ml-2">
+                                                <div class="mx-sm-3 col-form-label">
+                                                    От
+                                                </div>
+                                                <div class="mx-sm-3">
+                                                    <input type="text" class="form-control mx-sm-3" name="A1_${attribute.id}" placeholder="От"/>
+                                                </div>
+                                                <div class="mx-sm-3 col-form-label">
+                                                    До
+                                                </div>
+                                                <div>
+                                                    <input type="text" class="form-control mx-sm-3" name="A2_${attribute.id}" placeholder="До"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="my-2">
+                                            <div>
+                                                <label class="col-form-label mx-sm-3 mb-2 font-weight-bold">${attribute.name}</label>
+                                            </div>
+                                            <div>
+                                                <select class="form-control ml-3" name="A_${attribute.id}">
+                                                    <option></option>
+                                                    <c:forEach items="${attribute.list}" var="option">
+                                                        <option>${option.value}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                            </c:if>
+                            </c:forEach>
                             </c:if>
                             <div class="form-group row ml-2">
                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
