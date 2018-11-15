@@ -64,39 +64,4 @@ public class FakeParser extends SimpleTemplateBeanDefinitionParser {
             }
         });
     }
-
-/*
-    @Override
-    protected void processBody(Element element, Map<String, Object> data) {
-        processElements(element, new Predicate<Element>() {
-            @Override
-            public boolean apply(Element element) {
-                String name=getName(element);
-                LOGGER.debug(name);
-                if (element.hasAttributes()) {
-                    for (int i = 0; i < element.getAttributes().getLength(); i++) {
-                        String attrName = element.getAttributes().item(i).getNodeName();
-                        String attrStringValue = element.getAttributes().item(i).getNodeValue();
-                        LOGGER.debug(name+": name:"+attrName+", value:"+attrStringValue);
-                    }
-                }
-                if (element.hasChildNodes()) {
-                    NodeList nodes = element.getChildNodes();
-                    for (int i = 0; i < nodes.getLength(); i++) {
-                        Node node = nodes.item(i);
-                        if (node instanceof Element) {
-                            Element el = (Element) node;
-                            LOGGER.debug(name+": elementname:"+getName(el));
-                            if (getName(el).equals("entry")) {
-                                LOGGER.debug(name+": key:"+el.getAttribute("key")+", value:"+el.getAttribute("value"));
-                            }
-                        }
-                    }
-                }
-                return true;
-            }
-        });
-    }
-*/
-
 }

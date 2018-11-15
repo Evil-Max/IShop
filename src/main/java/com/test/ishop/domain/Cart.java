@@ -1,12 +1,17 @@
 package com.test.ishop.domain;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
-import java.util.HashSet;
+import java.io.Serializable;
 import java.util.Set;
 
-@Entity
+@Entity(name = "cart")
 @Table(name = "cart")
-public class Cart {
+@Component
+@Scope(value= "session")
+public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

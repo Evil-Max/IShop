@@ -7,6 +7,7 @@ import com.test.ishop.repos.OrderRepo;
 import com.test.ishop.repos.ProductRepo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +22,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Controller
+@Scope("session")
 public class CartController {
 
     private final static Logger LOGGER = Logger.getLogger(CartController.class);
-
 
     @Autowired
     private CartRepo cartRepo;
@@ -38,8 +39,8 @@ public class CartController {
     @Autowired
     private OrderRepo orderRepo;
 
-
-    private Cart cart = new Cart();
+    @Autowired
+    private Cart cart;
 
     @ResponseBody
     @PostMapping("/getCartSum")
@@ -60,15 +61,11 @@ public class CartController {
             Model model
     ) {
 
-        //System.out.println(id);
         Product product = productRepo.findById(id).get();
         LOGGER.debug("addProduct is called. Id="+id);
-        //Product product = productRepo.getOne(id);
-        LOGGER.debug("Name="+product.getName());
         Map<String,String> result = new HashMap<String, String>();
         Double sum=0d;
         String status="";
-        if (cart == null) cart = new Cart();
 
         if (product!=null) {
             if (product.getQuantity()>0) {
@@ -88,7 +85,7 @@ public class CartController {
         sum = cart.getCartSum();
         result.put("sum", sum.toString());
         result.put("status", status);
-
+        LOGGER.debug("Sum="+sum);
         return result;
     }
 
@@ -108,9 +105,7 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("deleteProduct is called. Id="+pid);
-        //Product product = productRepo.getOne(pid);
         Product product = productRepo.findById(pid).get();
-        LOGGER.debug("name="+product.getName());
         for (Iterator<Product> i = cart.getProducts().iterator(); i.hasNext();) {
             Product p = i.next();
             if (p.getId().equals(product.getId())) {
@@ -152,7 +147,7 @@ public class CartController {
     public String myOrders(
             Model model
     ) {
-        LOGGER.debug("meorders is called");
+        LOGGER.debug("myorders is called");
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Client client = clientRepo.findByUsername(userName);
@@ -195,14 +190,11 @@ public class CartController {
 
 
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        LOGGER.debug("username="+userName);
         Client client = clientRepo.findByUsername(userName);
-        LOGGER.debug("find client="+client.getFI());
 
         cart.setClient(client);
-        LOGGER.debug("cart befor save: "+cart.toString());
+
         cartRepo.save(cart);
-        LOGGER.debug("cart saved");
 
         Order order = new Order();
         order.setAddress(address);
@@ -213,7 +205,6 @@ public class CartController {
         order.setDeliveryStatus(DeliveryStatus.values()[deliveryStatus]);
         order.setCart(cart);
         orderRepo.save(order);
-        LOGGER.debug("order saved");
         cart = new Cart();
 
         String message="Заказ оформлен. Ожидайте доставки.";

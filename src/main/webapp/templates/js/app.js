@@ -10,6 +10,23 @@ $('.popover-dismiss').popover({
 
 function getXmlHttp(){
   var xmlhttp;
+    try {
+        if (window.XMLHttpRequest) {
+             // code for IE7+, Firefox, Chrome, Opera, Safari
+             xmlhttp = new XMLHttpRequest();
+        }
+        else {
+             // code for IE6, IE5
+             xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+             // code for ??
+             if (!xmlhttp) {
+                xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+             }
+        }
+    } catch (e) {
+        xmlhttp = false;
+    }
+    /*
   try {
     xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
   } catch (e) {
@@ -22,6 +39,7 @@ function getXmlHttp(){
   if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
     xmlhttp = new XMLHttpRequest();
   }
+  */
   return xmlhttp;
 }
 /*
@@ -80,8 +98,6 @@ function addProduct(id) {
                     $('#cart-sum').text('Всего '+event.sum+' руб.');
                     addAlert('Товар \''+$('#product-name-'+id).text()+'\' добавлен в корзину','success');
                 };
-
-
             }
         }
     }

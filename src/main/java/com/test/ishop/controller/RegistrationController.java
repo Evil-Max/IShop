@@ -23,7 +23,7 @@ public class RegistrationController {
 
     @GetMapping("/registration")
     public String registration(Model model) {
-        LOGGER.info("registration is called.");
+        LOGGER.debug("registration is called.");
 
         return "registration";
     }
@@ -43,7 +43,7 @@ public class RegistrationController {
 
             Model model
     ) {
-        LOGGER.info("register is called.");
+        LOGGER.debug("register is called.");
         String errorMessage = "";
         if ((login.isEmpty())||(password.isEmpty())) {
             errorMessage ="Не заполнены все поля";
@@ -73,7 +73,7 @@ public class RegistrationController {
         client.setEmail(email);
         client.setRoles(Collections.singleton(Role.USER));
         clientRepo.save(client);
-        LOGGER.info("Client is created="+client);
+        LOGGER.debug("Client is created="+client);
 
         return "redirect:/";
     }
