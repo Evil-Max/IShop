@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
-import java.util.Map;
 
 @Controller
 public class RegistrationController {
@@ -28,6 +27,51 @@ public class RegistrationController {
         return "registration";
     }
 
+    private boolean verifyData(
+            String login,
+            String password,
+            Model model
+    ) {
+        boolean result = true;
+        String errorMessage = "";
+        if ((login.isEmpty())||(password.isEmpty())) {
+            errorMessage ="Не заполнены все необходимые поля";
+        } else {
+            if (clientRepo.findByUsername(login) != null) {
+                errorMessage = "Пользователь уже существует";
+            }
+        }
+        if (!errorMessage.isEmpty()) {
+            LOGGER.debug("registration error:" + errorMessage + "(" + login + ")");
+            model.addAttribute("errormessage", errorMessage);
+            result=false;
+        }
+        return result;
+    }
+
+    private void saveClient(
+            String login,
+            String password,
+            String username,
+            String usersurname,
+            String userpatronymic,
+            String address,
+            String email
+    ) {
+        Client client = new Client();
+        client.setActive(true);
+        client.setUsername(login);
+        client.setPassword(password);
+        client.setFirst_name(username);
+        client.setSurname(usersurname);
+        client.setPatronymic(userpatronymic);
+        client.setAddress(address);
+        client.setEmail(email);
+        client.setRoles(Collections.singleton(Role.USER));
+        clientRepo.save(client);
+        LOGGER.debug("Client is created="+client);
+    }
+
     @PostMapping("/register")
     public String register(
 
@@ -38,43 +82,13 @@ public class RegistrationController {
             @RequestParam String userpatronymic,
             @RequestParam String address,
             @RequestParam String email,
-
-            @RequestParam Map<String, String> form,
-
             Model model
     ) {
         LOGGER.debug("register is called.");
-        String errorMessage = "";
-        if ((login.isEmpty())||(password.isEmpty())) {
-            errorMessage ="Не заполнены все поля";
-            //fillModel(model);
-            model.addAttribute("errormessage", errorMessage);
-            LOGGER.info("registration error:"+errorMessage+"(login="+login+", password="+password+")");
+        if (!verifyData(login,password,model)) {
             return "registration";
         }
-        Client client;
-        client = clientRepo.findByUsername(login);
-        if (client!=null) {
-            errorMessage ="Пользователь уже существует";
-
-            model.addAttribute("errormessage", errorMessage);
-            LOGGER.info("registration error:"+errorMessage+"("+login+")");
-            return "registration";
-        }
-        client = new Client();
-        client.setActive(true);
-        client.setUsername(login);
-        client.setPassword(password);
-
-        client.setFirst_name(username);
-        client.setSurname(usersurname);
-        client.setPatronymic(userpatronymic);
-        client.setAddress(address);
-        client.setEmail(email);
-        client.setRoles(Collections.singleton(Role.USER));
-        clientRepo.save(client);
-        LOGGER.debug("Client is created="+client);
-
+        saveClient(login,password,username,usersurname,userpatronymic,address,email);
         return "redirect:/";
     }
 

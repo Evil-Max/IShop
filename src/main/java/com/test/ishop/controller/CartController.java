@@ -161,6 +161,46 @@ public class CartController {
         return "orderlist";
     }
 
+    private boolean verifyData(Cart cart,String fio,String address,String delivery) {
+        String errorMessage = "";
+        boolean result = true;
+
+        if ((cart==null)||(cart.getProducts().isEmpty())) {
+            errorMessage ="Не возможно оформить заказ. Корзина пуста.";
+        } else {
+            Integer deliveryStatus = DeliveryStatus.getStatusByName(delivery);
+            if ((fio.isEmpty()) || (address.isEmpty()) || (deliveryStatus == null)) {
+                errorMessage = "Не возможно оформить заказ. Не заполнены все поля.";
+            }
+        }
+        if (!errorMessage.isEmpty()) {
+            LOGGER.debug("order error:" + errorMessage);
+            result=false;
+        }
+        return result;
+    }
+
+    private void saveCart(Cart cart) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Client client = clientRepo.findByUsername(userName);
+
+        cart.setClient(client);
+        cartRepo.save(cart);
+    }
+    private void saveOrder(Cart cart, String fio, String address, String email, String delivery) {
+        Order order = new Order();
+        order.setAddress(address);
+        order.setFio(fio);
+        order.setEmail(email);
+        order.setSumma(cart.getCartSum());
+        order.setOrderStatus(OrderStatus.CONFIRMED);
+        order.setDeliveryStatus(DeliveryStatus.values()[DeliveryStatus.getStatusByName(delivery)]);
+        order.setCart(cart);
+        orderRepo.save(order);
+        LOGGER.debug("new order created:"+order);
+
+    }
+
 
     @PostMapping("/confirm")
     public String confirmOrder(
@@ -171,48 +211,19 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("confirm is called.");
-        String errorMessage = "";
 
-        if ((cart==null)||(cart.getProducts().isEmpty())) {
-            errorMessage ="Не возможно оформить заказ. Корзина пуста.";
-            model.addAttribute("errormessage", errorMessage);
-            LOGGER.debug("order error:"+errorMessage);
+        if (!verifyData(cart,fio,address,delivery)) {
             return "order";
         }
 
-        Integer deliveryStatus = DeliveryStatus.getStatusByName(delivery);
-        if ((fio.isEmpty())||(address.isEmpty())||(deliveryStatus==null)) {
-            errorMessage ="Не возможно оформить заказ. Не заполнены все поля.";
-            model.addAttribute("errormessage", errorMessage);
-            LOGGER.debug("order error:"+errorMessage+"(fio="+fio+", address="+address+", status="+deliveryStatus+")");
-            return "order";
-        }
-
-
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Client client = clientRepo.findByUsername(userName);
-
-        cart.setClient(client);
-
-        cartRepo.save(cart);
-
-        Order order = new Order();
-        order.setAddress(address);
-        order.setFio(fio);
-        order.setEmail(email);
-        order.setSumma(cart.getCartSum());
-        order.setOrderStatus(OrderStatus.CONFIRMED);
-        order.setDeliveryStatus(DeliveryStatus.values()[deliveryStatus]);
-        order.setCart(cart);
-        orderRepo.save(order);
+        saveCart(cart);
+        saveOrder(cart,fio,address,email,delivery);
         cart = new Cart();
 
         String message="Заказ оформлен. Ожидайте доставки.";
-        LOGGER.debug("new order created:"+order);
 
         return "forward:/alert/"+message;
     }
-
 
 
 }

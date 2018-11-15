@@ -30,34 +30,25 @@ public class MainController {
     @Autowired
     private ProductRepo productRepo;
 
-
     @Autowired
     private FakeClass fakeClass;
 
-    private Long activeCategory;
-
-    private Iterable<Category> categories;
-    private Iterable<Product> products;
-
-    private String alert="";
-
-    private void fillModel(Model model) {
+    private void fillModel(Model model,Iterable<Product> products,Long activeCategory,String alert) {
         model.addAttribute("activeCategory",activeCategory);
-        model.addAttribute("categories",categories);
+        model.addAttribute("categories",categoryRepo.findAll());
         model.addAttribute("products",products);
         if (!alert.isEmpty())
         model.addAttribute("message",alert);
-        alert="";
     }
 
     @GetMapping("/")
-    public String main(Model model) {
+    public String main(
+            Model model
+    ) {
         LOGGER.info("main is called");
         LOGGER.info(fakeClass.toString());
-        categories = categoryRepo.findAll();
-        products = productRepo.findAll();
-        activeCategory=0L;
-        fillModel(model);
+
+        fillModel(model,productRepo.findAll(),0L,"");
         return "main";
     }
 
@@ -66,20 +57,19 @@ public class MainController {
             @PathVariable long cid,
             Model model
     ) {
-        Category category = categoryRepo.getOne(cid);
         LOGGER.info("category/"+cid+" is called");
+        Category category = categoryRepo.getOne(cid);
+        Iterable<Product> products;
 
-        categories = categoryRepo.findAll();
-        Long id=0L;
-
-        if (category!=null) {
-            products = productRepo.findByCategoryId(category.getId());
-            id=category.getId();
-        } else {
+        if (category!=null)
+            products = productRepo.findByCategoryId(cid);
+        else {
+            LOGGER.debug("Категория не найдена");
             products = productRepo.findAll();
+            cid=0L;
         }
-        activeCategory=id;
-        fillModel(model);
+
+        fillModel(model,products,cid,"");
         return "main";
     }
 
@@ -89,9 +79,31 @@ public class MainController {
             Model model
     ) {
         LOGGER.info("alert is called. message="+message);
-        alert = message.replace('+',' ');
 
-        return "redirect:/";
+        fillModel(model,productRepo.findAll(),0L,message);
+        return "main";
+    }
+
+    @PostMapping("/filter")
+    public String productFilter(
+            @RequestParam Double price1,
+            @RequestParam Double price2,
+            @RequestParam Integer qnty1,
+            @RequestParam Integer qnty2,
+            @RequestParam String status,
+            @RequestParam Long activeCategory,
+            HttpServletRequest request,
+            Model model
+    ) {
+        LOGGER.info("filter is called");
+        String requestString=createSqlRequestString(price1,price2,qnty1,qnty2,status,activeCategory,request);
+
+        LOGGER.info("filter sql="+requestString);
+        Iterable<Product> products = productRepo.findByNativeQuery(requestString);
+
+        fillModel(model,products,activeCategory,"");
+
+        return "main";
     }
 
     private String getSQLString(String field, char type, Object o1,Object o2,String last) {
@@ -118,56 +130,45 @@ public class MainController {
         return result;
     }
 
-    @PostMapping("/filter")
-    public String productFilter(
-            @RequestParam Double price1,
-            @RequestParam Double price2,
-            @RequestParam Integer qnty1,
-            @RequestParam Integer qnty2,
-            @RequestParam String status,
-            HttpServletRequest request,
-            Model model
+    private String createSqlRequestString(
+            Double price1,
+            Double price2,
+            Integer qnty1,
+            Integer qnty2,
+            String status,
+            Long activeCategory,
+            HttpServletRequest request
     ) {
-        LOGGER.info("filter is called");
         String requestString="";
         String sqlForAll =
                 getSQLString("price",'N',price1,price2,
                         getSQLString("quantity",'N',qnty1,qnty2,
                                 getSQLString("status",'N',ProdStatus.getStatusByName(status),ProdStatus.getStatusByName(status),""
-                                                )));
+                                )));
         String sqlAttr="";
         sqlForAll=(activeCategory==0?"":"category_id="+activeCategory+(!sqlForAll.isEmpty()?" and ":""))+sqlForAll;
 
         if (activeCategory!=0) {
             Optional<Category> category = categoryRepo.findById(activeCategory);
-            //Category category = categoryRepo.getOne(activeCategory);
-            for(Attribute a:category.get().getAttributes()) {
-                String sqlFilter="";
-                String aId=""+a.getId();
-                if (a.getType()=='N') {
-                    sqlFilter=getSQLString("value_n",'N',request.getParameter("A1_"+aId),request.getParameter("A2_"+aId),"");
-                } else if (a.getType()=='S') {
-                    sqlFilter=getSQLString("value_s",'S',request.getParameter("A_"+aId),null,"");
+            if (category!=null) {
+                for (Attribute a : category.get().getAttributes()) {
+                    String sqlFilter = "";
+                    String aId = "" + a.getId();
+                    if (a.getType() == 'N') {
+                        sqlFilter = getSQLString("value_n", 'N', request.getParameter("A1_" + aId), request.getParameter("A2_" + aId), "");
+                    } else if (a.getType() == 'S') {
+                        sqlFilter = getSQLString("value_s", 'S', request.getParameter("A_" + aId), null, "");
+                    }
+                    if (!sqlFilter.isEmpty()) {
+                        sqlFilter = "select distinct product_id from product_attribute where attribute_id=" + aId + " and " + sqlFilter;
+                        sqlAttr = sqlAttr + (!sqlAttr.isEmpty() ? " intersect " : "") + sqlFilter;
+                    }
                 }
-                if (!sqlFilter.isEmpty()) {
-                    sqlFilter="select distinct product_id from product_attribute where attribute_id="+aId+" and "+sqlFilter;
-                    sqlAttr=sqlAttr+(!sqlAttr.isEmpty()?" intersect ":"")+sqlFilter;
-                }
+                sqlForAll += (!sqlAttr.isEmpty() ? " and id in (" + sqlAttr + ")" : "");
             }
-            sqlForAll+=(!sqlAttr.isEmpty()?" and id in ("+sqlAttr+")":"");
         }
-
         requestString="select id, name, price, quantity, status, category_id from product"+(!sqlForAll.isEmpty()?" where "+sqlForAll:"");
-
-        //System.out.println(requestString);
-
-        categories = categoryRepo.findAll();
-        LOGGER.info("filter sql="+requestString);
-        products = productRepo.findByNativeQuery(requestString);
-
-        fillModel(model);
-
-        return "main";
+        return requestString;
     }
 
 }

@@ -148,6 +148,7 @@
                             </c:if>
                             <div class="form-group row ml-2">
                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                                <input type="hidden" name="activeCategory" value="${activeCategory}" />
                                 <button type="submit" class="btn btn-primary collapsed my-2" data-toggle="collapse" data-target="#collapseFilter">Применить</button>
                             </div>
                         </form>

@@ -51,7 +51,7 @@
             <form action="<c:url value = '/cart'/>" method="post">
 
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                <span action="<c:url value = '/cart'/>" <c:if test ="${user != null}">class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Авторизуйтесь для оформления заказа"</c:if>>
+                <span action="<c:url value = '/cart'/>" <c:if test ="${user == null}">class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Авторизуйтесь для оформления заказа"</c:if>>
                     <button class="btn btn-outline-light my-2 my-sm-0" type="submit"
                 <c:if test ="${user == null}">disabled</c:if>>Корзина</button></span>
 
