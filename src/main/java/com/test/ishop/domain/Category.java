@@ -15,7 +15,7 @@ public class Category {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
     private Set<Attribute> attributes;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     private Set<Product> products;
 
     public Category() {

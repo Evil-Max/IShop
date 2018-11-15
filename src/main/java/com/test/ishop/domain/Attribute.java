@@ -18,7 +18,7 @@ public class Attribute {
     @JoinColumn(name="category_id", nullable = false)
     private Category category;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name="attribute_id", nullable = false)
     private Set<ProductAttribute> values = new HashSet<ProductAttribute>();
 

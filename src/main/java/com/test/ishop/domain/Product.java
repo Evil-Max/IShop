@@ -29,7 +29,7 @@ public class Product {
     @JoinColumn(name="product_id", nullable = false)
     private Set<ProductAttribute> values = new HashSet<ProductAttribute>();
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "products")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "products")
     private Set<Cart> carts;
 
 

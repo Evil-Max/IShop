@@ -1,10 +1,6 @@
 package com.test.ishop.domain;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +28,7 @@ public class Client /*implements UserDetails*/ {
     private Set<Role> roles;
 
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "client")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
     private Set<Cart> carts = new HashSet<Cart>();
 
     public Client() {
