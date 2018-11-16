@@ -1,5 +1,6 @@
 package com.test.ishop.controller;
 
+import com.test.ishop.config.SessionData;
 import com.test.ishop.domain.*;
 import com.test.ishop.repos.CartRepo;
 import com.test.ishop.repos.ClientRepo;
@@ -7,7 +8,6 @@ import com.test.ishop.repos.OrderRepo;
 import com.test.ishop.repos.ProductRepo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 @Controller
-@Scope("session")
+//@Scope("session")
 public class CartController {
 
     private final static Logger LOGGER = Logger.getLogger(CartController.class);
@@ -39,8 +39,11 @@ public class CartController {
     @Autowired
     private OrderRepo orderRepo;
 
+//    @Autowired
+//    private Cart cart;
+
     @Autowired
-    private Cart cart;
+    private SessionData sessionData;
 
     @ResponseBody
     @PostMapping("/getCartSum")
@@ -49,7 +52,7 @@ public class CartController {
     ) {
         LOGGER.debug("getCartSum is called");
         Map<String,String> result = new HashMap<String, String>();
-        Double sum = cart.getCartSum();
+        Double sum = sessionData.getCart().getCartSum();
         result.put("sum",sum.toString());
         return result;
     }
@@ -69,20 +72,20 @@ public class CartController {
 
         if (product!=null) {
             if (product.getQuantity()>0) {
-                if (cart.getProducts() == null) cart.setProducts(new HashSet<Product>());
-                for(Product p:cart.getProducts()) {
+                if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<Product>());
+                for(Product p:sessionData.getCart().getProducts()) {
                     if (p.getId().equals(product.getId())) {
                         status = "Товар уже есть в корзине";
                         break;
                     }
                 }
-                if (status.isEmpty()) cart.getProducts().add(product);
+                if (status.isEmpty()) sessionData.getCart().getProducts().add(product);
             } else status = "Товара нет в наличии";
         } else status ="Ошибка при добавлении товара в корзину";
 
         if (!status.isEmpty()) LOGGER.debug("Product add error="+status);
         
-        sum = cart.getCartSum();
+        sum = sessionData.getCart().getCartSum();
         result.put("sum", sum.toString());
         result.put("status", status);
         LOGGER.debug("Sum="+sum);
@@ -94,8 +97,8 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("cart is called");
-        if (cart.getProducts() == null) cart.setProducts(new HashSet<Product>());
-        model.addAttribute("cart",cart);
+        if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<Product>());
+        model.addAttribute("cart",sessionData.getCart());
         return "cart";
     }
 
@@ -106,13 +109,13 @@ public class CartController {
     ) {
         LOGGER.debug("deleteProduct is called. Id="+pid);
         Product product = productRepo.findById(pid).get();
-        for (Iterator<Product> i = cart.getProducts().iterator(); i.hasNext();) {
+        for (Iterator<Product> i = sessionData.getCart().getProducts().iterator(); i.hasNext();) {
             Product p = i.next();
             if (p.getId().equals(product.getId())) {
                 i.remove();
             }
         }
-        model.addAttribute("cart",cart);
+        model.addAttribute("cart",sessionData.getCart());
         return "cart";
     }
 
@@ -120,9 +123,9 @@ public class CartController {
     public String clearCart(
             Model model
     ) {
-        LOGGER.debug("clearCart is called. Deleting "+cart.getProducts().size()+" products");
-        cart.getProducts().clear();
-        model.addAttribute("cart",cart);
+        LOGGER.debug("clearCart is called. Deleting "+sessionData.getCart().getProducts().size()+" products");
+        sessionData.getCart().getProducts().clear();
+        model.addAttribute("cart",sessionData.getCart());
         return "cart";
     }
 
@@ -138,7 +141,7 @@ public class CartController {
             model.addAttribute("fio",client.getFullName());
             model.addAttribute("address",client.getAddress());
             model.addAttribute("email",client.getEmail());
-            model.addAttribute("ordersum",cart.getCartSum());
+            model.addAttribute("ordersum",sessionData.getCart().getCartSum());
         }
         return "order";
     }
@@ -212,13 +215,13 @@ public class CartController {
     ) {
         LOGGER.debug("confirm is called.");
 
-        if (!verifyData(cart,fio,address,delivery)) {
+        if (!verifyData(sessionData.getCart(),fio,address,delivery)) {
             return "order";
         }
 
-        saveCart(cart);
-        saveOrder(cart,fio,address,email,delivery);
-        cart = new Cart();
+        saveCart(sessionData.getCart());
+        saveOrder(sessionData.getCart(),fio,address,email,delivery);
+        sessionData.setCart(new Cart());
 
         String message="Заказ оформлен. Ожидайте доставки.";
 

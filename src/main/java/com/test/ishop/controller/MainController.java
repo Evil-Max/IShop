@@ -33,22 +33,37 @@ public class MainController {
     @Autowired
     private FakeClass fakeClass;
 
+//    @Autowired
+//    ConfigurableWebApplicationContext applicationContext;
+
     private void fillModel(Model model,Iterable<Product> products,Long activeCategory,String alert) {
         model.addAttribute("activeCategory",activeCategory);
         model.addAttribute("categories",categoryRepo.findAll());
         model.addAttribute("products",products);
         if (!alert.isEmpty())
         model.addAttribute("message",alert);
+        //model.addAttribute("fake",fakeClass.getMessage());
+/*
+        for(String bean:applicationContext.getBeanDefinitionNames()) {
+            String scope=applicationContext.getBeanFactory().getBeanDefinition(bean).getScope();
+            if (scope.isEmpty()) {
+                if (applicationContext.getBeanFactory().getBeanDefinition("cart").isSingleton()) scope="singleton";
+                else if (applicationContext.getBeanFactory().getBeanDefinition("cart").isPrototype()) scope="prototype";
+            }
+            LOGGER.debug("Bean:" + bean + ", Scope:" + scope);
+        }
+*/
     }
 
     @GetMapping("/")
     public String main(
             Model model
     ) {
-        LOGGER.info("main is called");
-        LOGGER.info(fakeClass.toString());
+        LOGGER.debug("main is called");
+        LOGGER.debug(fakeClass.toString());
 
         fillModel(model,productRepo.findAll(),0L,"");
+
         return "main";
     }
 
@@ -57,8 +72,8 @@ public class MainController {
             @PathVariable long cid,
             Model model
     ) {
-        LOGGER.info("category/"+cid+" is called");
-        Category category = categoryRepo.getOne(cid);
+        LOGGER.debug("category/"+cid+" is called");
+        Category category = categoryRepo.findById(cid).get();
         Iterable<Product> products;
 
         if (category!=null)
@@ -69,6 +84,7 @@ public class MainController {
             cid=0L;
         }
 
+//        fakeClass.setMessage(category.getName());
         fillModel(model,products,cid,"");
         return "main";
     }
@@ -78,7 +94,7 @@ public class MainController {
             @PathVariable("message") String message,
             Model model
     ) {
-        LOGGER.info("alert is called. message="+message);
+        LOGGER.debug("alert is called. message="+message);
 
         fillModel(model,productRepo.findAll(),0L,message);
         return "main";
@@ -95,10 +111,10 @@ public class MainController {
             HttpServletRequest request,
             Model model
     ) {
-        LOGGER.info("filter is called");
+        LOGGER.debug("filter is called");
         String requestString=createSqlRequestString(price1,price2,qnty1,qnty2,status,activeCategory,request);
 
-        LOGGER.info("filter sql="+requestString);
+        LOGGER.debug("filter sql="+requestString);
         Iterable<Product> products = productRepo.findByNativeQuery(requestString);
 
         fillModel(model,products,activeCategory,"");

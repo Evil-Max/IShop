@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity(name = "cart")
 @Table(name = "cart")
 @Component
-@Scope(value= "session")
+@Scope(value= "prototype")
 public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
