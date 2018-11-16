@@ -29,7 +29,7 @@ public class Client /*implements UserDetails*/ {
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
-    private Set<Cart> carts = new HashSet<Cart>();
+    private Set<Cart> carts = new HashSet<>();
 
     public Client() {
     }

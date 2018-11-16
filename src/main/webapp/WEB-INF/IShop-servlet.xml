@@ -34,6 +34,7 @@
     <!--Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired and so on-->
     <context:annotation-config/>
 
+
     <!-- ========================================================== -->
     <!-- JSP Configuration -->
     <!-- ========================================================== -->

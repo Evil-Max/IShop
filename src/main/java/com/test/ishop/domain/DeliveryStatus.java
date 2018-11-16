@@ -5,7 +5,7 @@ public enum DeliveryStatus {
     COURIER("Курьером"),
     SELF("Самовывоз");
 
-    private String name;
+    private final String name;
 
     DeliveryStatus(String name) {
         this.name = name;

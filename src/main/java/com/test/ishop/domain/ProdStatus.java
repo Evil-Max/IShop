@@ -7,8 +7,13 @@ public enum ProdStatus {
 
     public static Integer getStatusByName(String name) {
         if ((name==null)||(name.isEmpty())) return null;
-        if (name.equals("В наличии")) return ProdStatus.AVAILABLE.ordinal();
-        else if (name.equals("Под заказ")) return ProdStatus.ON_ORDER.ordinal();
-        else return ProdStatus.NO_AVAILABLE.ordinal();
+        switch (name) {
+            case "В наличии":
+                return ProdStatus.AVAILABLE.ordinal();
+            case "Под заказ":
+                return ProdStatus.ON_ORDER.ordinal();
+            default:
+                return ProdStatus.NO_AVAILABLE.ordinal();
+        }
     }
 }

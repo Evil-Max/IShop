@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public class UserPrincipal implements UserDetails {
-    private Client client;
+    private final Client client;
 
     public String getFI() {
         return client.getFI();

@@ -27,7 +27,7 @@ public class Product {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name="product_id", nullable = false)
-    private Set<ProductAttribute> values = new HashSet<ProductAttribute>();
+    private Set<ProductAttribute> values = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "products")
     private Set<Cart> carts;
@@ -51,12 +51,12 @@ public class Product {
     }
 
     public String attributesList() {
-        String result="";
+        StringBuilder result= new StringBuilder();
         for(ProductAttribute p:values) {
-            result+=p.getAttribute().getName()+": "+(p.getAttribute().getType()=='S'?p.getValueStr():p.getValueNum().toString())+", ";
+            result.append(p.getAttribute().getName()).append(": ").append(p.getAttribute().getType() == 'S' ? p.getValueStr() : p.getValueNum().toString()).append(", ");
         }
-        if (result.length()>0) result=result.substring(0,result.length()-2);
-        return  result;
+        if (result.length()>0) result = new StringBuilder(result.substring(0, result.length() - 2));
+        return result.toString();
     }
 
     public Set<Cart> getCarts() {

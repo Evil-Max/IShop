@@ -20,11 +20,11 @@ public class Attribute {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name="attribute_id", nullable = false)
-    private Set<ProductAttribute> values = new HashSet<ProductAttribute>();
+    private Set<ProductAttribute> values = new HashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name="attribute_id", nullable = true)
-    private Set<AttributeList> list = new HashSet<AttributeList>();
+    private Set<AttributeList> list = new HashSet<>();
 
     public Attribute() {
     }

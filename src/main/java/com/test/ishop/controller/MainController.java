@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -33,26 +34,12 @@ public class MainController {
     @Autowired
     private FakeClass fakeClass;
 
-//    @Autowired
-//    ConfigurableWebApplicationContext applicationContext;
-
     private void fillModel(Model model,Iterable<Product> products,Long activeCategory,String alert) {
         model.addAttribute("activeCategory",activeCategory);
         model.addAttribute("categories",categoryRepo.findAll());
         model.addAttribute("products",products);
         if (!alert.isEmpty())
         model.addAttribute("message",alert);
-        //model.addAttribute("fake",fakeClass.getMessage());
-/*
-        for(String bean:applicationContext.getBeanDefinitionNames()) {
-            String scope=applicationContext.getBeanFactory().getBeanDefinition(bean).getScope();
-            if (scope.isEmpty()) {
-                if (applicationContext.getBeanFactory().getBeanDefinition("cart").isSingleton()) scope="singleton";
-                else if (applicationContext.getBeanFactory().getBeanDefinition("cart").isPrototype()) scope="prototype";
-            }
-            LOGGER.debug("Bean:" + bean + ", Scope:" + scope);
-        }
-*/
     }
 
     @GetMapping("/")
@@ -73,18 +60,19 @@ public class MainController {
             Model model
     ) {
         LOGGER.debug("category/"+cid+" is called");
-        Category category = categoryRepo.findById(cid).get();
+        Category category;
+
         Iterable<Product> products;
 
-        if (category!=null)
+        try {
+            category=categoryRepo.findById(cid).get();
             products = productRepo.findByCategoryId(cid);
-        else {
+        } catch (NoSuchElementException e) {
             LOGGER.debug("Категория не найдена");
             products = productRepo.findAll();
             cid=0L;
         }
 
-//        fakeClass.setMessage(category.getName());
         fillModel(model,products,cid,"");
         return "main";
     }
@@ -155,18 +143,18 @@ public class MainController {
             Long activeCategory,
             HttpServletRequest request
     ) {
-        String requestString="";
+        String requestString;
         String sqlForAll =
                 getSQLString("price",'N',price1,price2,
                         getSQLString("quantity",'N',qnty1,qnty2,
                                 getSQLString("status",'N',ProdStatus.getStatusByName(status),ProdStatus.getStatusByName(status),""
                                 )));
-        String sqlAttr="";
+        StringBuilder sqlAttr= new StringBuilder();
         sqlForAll=(activeCategory==0?"":"category_id="+activeCategory+(!sqlForAll.isEmpty()?" and ":""))+sqlForAll;
 
         if (activeCategory!=0) {
             Optional<Category> category = categoryRepo.findById(activeCategory);
-            if (category!=null) {
+            if (category.isPresent()) {
                 for (Attribute a : category.get().getAttributes()) {
                     String sqlFilter = "";
                     String aId = "" + a.getId();
@@ -177,10 +165,10 @@ public class MainController {
                     }
                     if (!sqlFilter.isEmpty()) {
                         sqlFilter = "select distinct product_id from product_attribute where attribute_id=" + aId + " and " + sqlFilter;
-                        sqlAttr = sqlAttr + (!sqlAttr.isEmpty() ? " intersect " : "") + sqlFilter;
+                        sqlAttr.append((sqlAttr.length() > 0) ? " intersect " : "").append(sqlFilter);
                     }
                 }
-                sqlForAll += (!sqlAttr.isEmpty() ? " and id in (" + sqlAttr + ")" : "");
+                sqlForAll += ((sqlAttr.length() > 0) ? " and id in (" + sqlAttr + ")" : "");
             }
         }
         requestString="select id, name, price, quantity, status, category_id from product"+(!sqlForAll.isEmpty()?" where "+sqlForAll:"");

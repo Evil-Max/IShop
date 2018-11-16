@@ -1,6 +1,5 @@
 package com.test.ishop.config;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class FakeData {

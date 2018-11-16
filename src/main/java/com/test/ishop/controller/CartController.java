@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 //@Scope("session")
@@ -51,7 +48,7 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("getCartSum is called");
-        Map<String,String> result = new HashMap<String, String>();
+        Map<String,String> result = new HashMap<>();
         Double sum = sessionData.getCart().getCartSum();
         result.put("sum",sum.toString());
         return result;
@@ -64,15 +61,16 @@ public class CartController {
             Model model
     ) {
 
-        Product product = productRepo.findById(id).get();
+        Product product;
         LOGGER.debug("addProduct is called. Id="+id);
-        Map<String,String> result = new HashMap<String, String>();
-        Double sum=0d;
+        Map<String,String> result = new HashMap<>();
+        Double sum;
         String status="";
 
-        if (product!=null) {
+        try {
+            product = productRepo.findById(id).get();
             if (product.getQuantity()>0) {
-                if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<Product>());
+                if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<>());
                 for(Product p:sessionData.getCart().getProducts()) {
                     if (p.getId().equals(product.getId())) {
                         status = "Товар уже есть в корзине";
@@ -81,7 +79,9 @@ public class CartController {
                 }
                 if (status.isEmpty()) sessionData.getCart().getProducts().add(product);
             } else status = "Товара нет в наличии";
-        } else status ="Ошибка при добавлении товара в корзину";
+        } catch (NoSuchElementException e) {
+            status ="Ошибка при добавлении товара в корзину";
+        }
 
         if (!status.isEmpty()) LOGGER.debug("Product add error="+status);
         
@@ -97,7 +97,7 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("cart is called");
-        if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<Product>());
+        if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<>());
         model.addAttribute("cart",sessionData.getCart());
         return "cart";
     }
@@ -108,13 +108,20 @@ public class CartController {
             Model model
     ) {
         LOGGER.debug("deleteProduct is called. Id="+pid);
-        Product product = productRepo.findById(pid).get();
-        for (Iterator<Product> i = sessionData.getCart().getProducts().iterator(); i.hasNext();) {
-            Product p = i.next();
-            if (p.getId().equals(product.getId())) {
-                i.remove();
+        Product product;
+
+        try {
+            product=productRepo.findById(pid).get();
+            for (Iterator<Product> i = sessionData.getCart().getProducts().iterator(); i.hasNext();) {
+                Product p = i.next();
+                if (p.getId().equals(product.getId())) {
+                    i.remove();
+                }
             }
+        } catch (NoSuchElementException e) {
+            LOGGER.debug("delete error");
         }
+
         model.addAttribute("cart",sessionData.getCart());
         return "cart";
     }
