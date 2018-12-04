@@ -15,7 +15,7 @@ import java.util.Collections;
 
 @Controller
 public class RegistrationController {
-    private final static Logger LOGGER = Logger.getLogger(RegistrationController.class);
+    private static final Logger LOGGER = Logger.getLogger(RegistrationController.class);
 
     @Autowired
     private ClientRepo clientRepo;
@@ -62,7 +62,7 @@ public class RegistrationController {
         client.setActive(true);
         client.setUsername(login);
         client.setPassword(password);
-        client.setFirst_name(username);
+        client.setFirstName(username);
         client.setSurname(usersurname);
         client.setPatronymic(userpatronymic);
         client.setAddress(address);

@@ -22,7 +22,7 @@ import java.util.*;
 //@Scope("session")
 public class CartController {
 
-    private final static Logger LOGGER = Logger.getLogger(CartController.class);
+    private static final Logger LOGGER = Logger.getLogger(CartController.class);
 
     @Autowired
     private CartRepo cartRepo;
@@ -35,9 +35,6 @@ public class CartController {
 
     @Autowired
     private OrderRepo orderRepo;
-
-//    @Autowired
-//    private Cart cart;
 
     @Autowired
     private SessionData sessionData;
@@ -54,6 +51,47 @@ public class CartController {
         return result;
     }
 
+    private boolean isCartContainProduct(Product product) {
+        boolean result=false;
+        if (sessionData.getCart().getProducts() == null)
+            sessionData.getCart().setProducts(new HashSet<>());
+        for(Product p:sessionData.getCart().getProducts()) {
+            if (p.getId().equals(product.getId())) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private boolean verifyProduct(
+            Long id,
+            Map<String,String> map,
+            Optional<Product> optionalProduct
+            ) {
+        boolean result = false;
+        String status="";
+
+        Product product;
+
+        if (optionalProduct.isPresent()) {
+            product = optionalProduct.get();
+            if (product.getQuantity()>0) {
+                if (isCartContainProduct(product)) {
+                    status = "Товар уже есть в корзине";
+                } else
+                    result = true;
+            } else
+                status = "Товара нет в наличии";
+        } else
+            status ="Продукт #"+id+" отсутствует";
+
+        if (!status.isEmpty()) LOGGER.debug("Ошибка добавления продукта:"+status);
+        map.put("status", status);
+
+        return result;
+    }
+
     @ResponseBody
     @PostMapping("/addProduct/{id}")
     public Map<String,String> addProduct(
@@ -61,35 +99,20 @@ public class CartController {
             Model model
     ) {
 
-        Product product;
         LOGGER.debug("addProduct is called. Id="+id);
-        Map<String,String> result = new HashMap<>();
+        Map<String,String> map = new HashMap<>();
         Double sum;
-        String status="";
 
-        try {
-            product = productRepo.findById(id).get();
-            if (product.getQuantity()>0) {
-                if (sessionData.getCart().getProducts() == null) sessionData.getCart().setProducts(new HashSet<>());
-                for(Product p:sessionData.getCart().getProducts()) {
-                    if (p.getId().equals(product.getId())) {
-                        status = "Товар уже есть в корзине";
-                        break;
-                    }
-                }
-                if (status.isEmpty()) sessionData.getCart().getProducts().add(product);
-            } else status = "Товара нет в наличии";
-        } catch (NoSuchElementException e) {
-            status ="Ошибка при добавлении товара в корзину";
+        Optional<Product> optionalProduct = productRepo.findById(id);
+
+        if (verifyProduct(id,map,optionalProduct)) {
+            sessionData.getCart().getProducts().add(optionalProduct.get());
         }
 
-        if (!status.isEmpty()) LOGGER.debug("Product add error="+status);
-        
         sum = sessionData.getCart().getCartSum();
-        result.put("sum", sum.toString());
-        result.put("status", status);
-        LOGGER.debug("Sum="+sum);
-        return result;
+        map.put("sum", sum.toString());
+
+        return map;
     }
 
     @PostMapping("/cart")
@@ -109,17 +132,19 @@ public class CartController {
     ) {
         LOGGER.debug("deleteProduct is called. Id="+pid);
         Product product;
+        Optional<Product> optionalProduct;
+        optionalProduct = productRepo.findById(pid);
 
-        try {
-            product=productRepo.findById(pid).get();
+        if (optionalProduct.isPresent()) {
+            product=optionalProduct.get();
             for (Iterator<Product> i = sessionData.getCart().getProducts().iterator(); i.hasNext();) {
                 Product p = i.next();
                 if (p.getId().equals(product.getId())) {
                     i.remove();
                 }
             }
-        } catch (NoSuchElementException e) {
-            LOGGER.debug("delete error");
+        } else {
+            LOGGER.debug("Ошибка удаления: продукт #"+pid+" не найден");
         }
 
         model.addAttribute("cart",sessionData.getCart());
@@ -167,7 +192,7 @@ public class CartController {
                              "WHERE cart_id IN (SELECT id FROM cart WHERE client_id="+client.getId()+")";
         orders = orderRepo.findByNativeQuery(requestString);
         if (orders!=null)
-        model.addAttribute("orders",orders);
+            model.addAttribute("orders",orders);
         return "orderlist";
     }
 

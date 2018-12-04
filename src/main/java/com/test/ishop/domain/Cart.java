@@ -31,9 +31,6 @@ public class Cart implements Serializable {
     @OneToOne(optional = true, mappedBy="cart")
     private Order order;
 
-    public Cart() {
-    }
-
     @Override
     public String toString() {
         String cl;

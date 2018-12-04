@@ -3,9 +3,6 @@ package com.test.ishop.config;
 public class FakeClass {
     private FakeData fakeData;
 
-    public FakeClass() {
-    }
-
     public FakeData getFakeData() {
         return fakeData;
     }

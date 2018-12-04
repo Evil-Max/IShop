@@ -16,6 +16,11 @@
    http://www.springframework.org/schema/context
    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+
+    <context:annotation-config/>
+    <context:property-placeholder location="classpath:project.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:ds.postgres.properties" ignore-unresolvable="true"/>
+
     <!-- ========================================================== -->
     <!-- Import -->
     <!-- ========================================================== -->
@@ -70,6 +75,16 @@
     <!-- responsible for registering the necessary Spring components that power annotation-driven transaction management;
          such as when @Transactional methods are invoked -->
     <tx:annotation-driven />
+
+    <!-- ========================================================== -->
+    <!-- Custom Beans -->
+    <!-- ========================================================== -->
+
+    <bean id="Properties" class="java.util.Properties"/>
+    <bean id="ProjectProperties" class="com.test.ishop.service.ProjectProperties">
+        <constructor-arg name="properties" ref="Properties"/>
+        <constructor-arg name="propertiesFileName" value="project.properties"/>
+    </bean>
 
     <!-- ========================================================== -->
     <!-- End -->

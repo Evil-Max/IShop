@@ -3,17 +3,14 @@ package com.test.ishop.config;
 import java.util.Map;
 
 public class FakeData {
-    private Map<Long,String> map;
+    private Map<String,String> map;
     private String message;
 
-    public FakeData() {
-    }
-
-    public Map<Long, String> getMap() {
+    public Map<String, String> getMap() {
         return map;
     }
 
-    public void setMap(Map<Long, String> map) {
+    public void setMap(Map<String, String> map) {
         this.map = map;
     }
 

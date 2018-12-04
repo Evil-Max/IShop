@@ -22,6 +22,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     @Override
+    @SuppressWarnings("squid:S1168")
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }

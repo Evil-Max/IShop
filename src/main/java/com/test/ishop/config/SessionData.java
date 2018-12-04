@@ -12,9 +12,6 @@ public class SessionData {
     @Autowired
     private Cart cart;
 
-    public SessionData() {
-    }
-
     public Cart getCart() {
         return cart;
     }

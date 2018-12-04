@@ -188,9 +188,9 @@
                         <a tabindex="0" class="btn btn-secondary btn-sm" role="button" data-toggle="popover" data-trigger="focus"
                            data-content="${product.attributesList()}">?</a>
                         </td>
-                        <th>
+                        <td>
                             <button class="btn btn-primary btn-sm" onclick="addProduct(${product.id});">+</button>
-                        </th>
+                        </td>
 
                     </tr>
                 </c:when>

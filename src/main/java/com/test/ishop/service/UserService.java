@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements UserDetailsService {
-    private final static Logger LOGGER = Logger.getLogger(UserService.class);
+    private static final Logger LOGGER = Logger.getLogger(UserService.class);
 
     @Autowired
     private ClientRepo clientRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userName) {
         LOGGER.debug("UserService username="+userName);
         Client client = clientRepo.findByUsername(userName);
 

@@ -1,15 +1,13 @@
 package com.test.ishop.domain;
 
-import org.apache.log4j.Logger;
-
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "product")
-public class Product {
-    private final static Logger LOGGER = Logger.getLogger(Product.class);
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,9 +30,6 @@ public class Product {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "products")
     private Set<Cart> carts;
 
-
-    public Product() {
-    }
 
     @Override
     public String toString() {

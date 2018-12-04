@@ -26,9 +26,6 @@ public class Attribute {
     @JoinColumn(name="attribute_id", nullable = true)
     private Set<AttributeList> list = new HashSet<>();
 
-    public Attribute() {
-    }
-
     public Set<AttributeList> getList() {
         return list;
     }

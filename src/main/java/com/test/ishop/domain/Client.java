@@ -1,17 +1,20 @@
 package com.test.ishop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "client")
-public class Client /*implements UserDetails*/ {
+public class Client implements Serializable/*implements UserDetails*/ {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String first_name;
+    @Column(name = "first_name")
+    private String firstName;
+
     private String patronymic;
     private String surname;
 
@@ -31,11 +34,8 @@ public class Client /*implements UserDetails*/ {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "client")
     private Set<Cart> carts = new HashSet<>();
 
-    public Client() {
-    }
-
     public String getFI() {
-        return getFirst_name()+" "+getSurname();
+        return getFirstName()+" "+getSurname();
     }
 
     public Set<Role> getRoles() {
@@ -49,34 +49,9 @@ public class Client /*implements UserDetails*/ {
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);
     }
-/*
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isActive();
-    }
-*/
     public String getFullName() {
-        return surname+" "+first_name+" "+patronymic;
+        return surname+" "+ firstName +" "+patronymic;
     }
 
     public Long getId() {
@@ -87,12 +62,12 @@ public class Client /*implements UserDetails*/ {
         this.id = id;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getPatronymic() {

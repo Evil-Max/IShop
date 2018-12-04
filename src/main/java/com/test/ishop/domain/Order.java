@@ -1,10 +1,11 @@
 package com.test.ishop.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -25,9 +26,6 @@ public class Order {
     @OneToOne(optional = true)
     @JoinColumn(name="cart_id", unique = true, nullable = false, updatable = false)
     private Cart cart;
-
-    public Order() {
-    }
 
 
     public String getEmail() {

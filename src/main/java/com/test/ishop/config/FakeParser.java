@@ -27,18 +27,20 @@ public class FakeParser extends SimpleTemplateBeanDefinitionParser {
     }
 
     @Override
-    protected void processBody(Element element, Map<String, Object> data) {
+    protected void processBody(Element element, final Map<String, Object> data) {
         final List<Pair<String, String>> entry = new ArrayList<>();
         data.put("map", entry);
 
         processElements(element, "message", new Predicate<Element>() {
             @Override
             public boolean apply(Element element) {
-                data.put("message", Validate.notNull(element.getAttribute("value")));
-                LOGGER.debug("message:"+element.getAttribute("value"));
+                String value = Validate.notNull(element.getAttribute("value"));
+                data.put("message", value);
+                LOGGER.debug("message:"+value);
                 return true;
             }
         });
+
         processElements(element, "map", new Predicate<Element>() {
             @Override
             public boolean apply(Element element) {

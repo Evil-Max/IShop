@@ -24,9 +24,6 @@ public class ProductAttribute {
     @JoinColumn(name="attribute_id", insertable=false, updatable=false)
     private Attribute attribute;
 
-    public ProductAttribute() {
-    }
-
     @Override
     public String toString() {
         return "ProductAttribute{" +

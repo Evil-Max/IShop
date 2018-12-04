@@ -9,6 +9,7 @@ import com.test.ishop.repos.CategoryRepo;
 import com.test.ishop.repos.ProductRepo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,19 +18,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
 @Controller
 public class MainController {
 
-    private final static Logger LOGGER = Logger.getLogger(MainController.class);
+    private  static final Logger LOGGER = Logger.getLogger(MainController.class);
 
     @Autowired
     private CategoryRepo categoryRepo;
     @Autowired
     private ProductRepo productRepo;
+
+    @Value("${logpath}")
+    private String logpath;
 
     @Autowired
     private FakeClass fakeClass;
@@ -39,7 +42,7 @@ public class MainController {
         model.addAttribute("categories",categoryRepo.findAll());
         model.addAttribute("products",products);
         if (!alert.isEmpty())
-        model.addAttribute("message",alert);
+            model.addAttribute("message",alert);
     }
 
     @GetMapping("/")
@@ -48,6 +51,7 @@ public class MainController {
     ) {
         LOGGER.debug("main is called");
         LOGGER.debug(fakeClass.toString());
+        LOGGER.debug("logpath="+logpath);
 
         fillModel(model,productRepo.findAll(),0L,"");
 
@@ -60,14 +64,15 @@ public class MainController {
             Model model
     ) {
         LOGGER.debug("category/"+cid+" is called");
-        Category category;
+
+        Optional<Category> optionalCategory;
 
         Iterable<Product> products;
+        optionalCategory = categoryRepo.findById(cid);
 
-        try {
-            category=categoryRepo.findById(cid).get();
+        if (optionalCategory.isPresent()) {
             products = productRepo.findByCategoryId(cid);
-        } catch (NoSuchElementException e) {
+        } else {
             LOGGER.debug("Категория не найдена");
             products = productRepo.findAll();
             cid=0L;
@@ -76,6 +81,7 @@ public class MainController {
         fillModel(model,products,cid,"");
         return "main";
     }
+
 
     @PostMapping("/alert/{message}")
     public String alertShow(
@@ -110,6 +116,7 @@ public class MainController {
         return "main";
     }
 
+    @SuppressWarnings("squid:S3776")
     private String getSQLString(String field, char type, Object o1,Object o2,String last) {
         String result="";
         String var=field;
@@ -134,6 +141,7 @@ public class MainController {
         return result;
     }
 
+    @SuppressWarnings("squid:S3776")
     private String createSqlRequestString(
             Double price1,
             Double price2,

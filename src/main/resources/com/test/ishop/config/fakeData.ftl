@@ -7,7 +7,7 @@
 
     <bean id = "fakeData" class = "com.test.ishop.config.FakeData">
         <property name="map">
-            <map key-type="java.lang.Long" value-type="java.lang.String">
+            <map key-type="java.lang.String" value-type="java.lang.String">
                 <#list map as entry>
                 <entry key="${entry.key}" value="${entry.value}"/>
                 </#list>

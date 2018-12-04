@@ -5,7 +5,7 @@ import ru.sbrf.ufs.platform.core.spring.context.PlatformNamespaceHandler;
 
 
 public class FakeHandler extends PlatformNamespaceHandler {
-    private final static Logger LOGGER = Logger.getLogger(FakeHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(FakeHandler.class);
 
     @Override
     protected String getTemplatesPath() {

@@ -58,8 +58,8 @@ function setCartSum() {
                 //alert(req.responseText);
                 var event = JSON.parse(req.responseText);
                 $('#cart-sum').text('Всего '+event.sum+' руб.');
-            };
-        };
+            }
+        }
     };
     var url = $("meta[name='url']").attr("content");
 
@@ -97,7 +97,7 @@ function addProduct(id) {
                 } else {
                     $('#cart-sum').text('Всего '+event.sum+' руб.');
                     addAlert('Товар \''+$('#product-name-'+id).text()+'\' добавлен в корзину','success');
-                };
+                }
             }
         }
     }
